@@ -1,0 +1,33 @@
+{
+  "name": "desktop",
+  "version": "0.0.1",
+  "description": "Wareflow Desktop - Local-first warehouse visualization system",
+  "main": "./out/main/index.js",
+  "author": "Wareflow",
+  "homepage": "https://wareflow.vercel.app",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "postinstall": "electron-builder install-app-deps",
+    "build:win": "electron-vite build && electron-builder --win --config",
+    "build:mac": "electron-vite build && electron-builder --mac --config",
+    "build:linux": "electron-vite build && electron-builder --linux --config"
+  },
+  "dependencies": {
+    "@electron-toolkit/preload": "^3.0.1",
+    "@electron-toolkit/utils": "^3.0.0",
+    "electron-log": "^5.2.4"
+  },
+  "devDependencies": {
+    "@electron-toolkit/eslint-config": "^1.0.2",
+    "@electron-toolkit/eslint-config-ts": "^2.0.0",
+    "@electron-toolkit/tsconfig": "^1.0.1",
+    "@types/node": "^22.10.2",
+    "electron": "^33.3.1",
+    "electron-builder": "^25.1.8",
+    "electron-vite": "^2.3.0",
+    "typescript": "^5.7.2",
+    "vite": "^7.1.7"
+  }
+}

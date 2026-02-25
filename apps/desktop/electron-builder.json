@@ -1,0 +1,35 @@
+{
+  "appId": "com.wareflow.desktop",
+  "productName": "Wareflow",
+  "directories": {
+    "buildResources": "build",
+    "output": "dist"
+  },
+  "files": [
+    "out/**/*"
+  ],
+  "win": {
+    "target": [
+      "nsis"
+    ],
+    "artifactName": "${productName}-${version}-Setup.${ext}"
+  },
+  "nsis": {
+    "oneClick": false,
+    "perMachine": false,
+    "allowToChangeInstallationDirectory": true,
+    "deleteAppDataOnUninstall": false
+  },
+  "mac": {
+    "target": [
+      "dmg"
+    ],
+    "artifactName": "${productName}-${version}.${ext}"
+  },
+  "linux": {
+    "target": [
+      "AppImage"
+    ],
+    "artifactName": "${productName}-${version}.${ext}"
+  }
+}
