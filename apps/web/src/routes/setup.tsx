@@ -1,12 +1,15 @@
 import { useState, useCallback } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { FileSelection, Preview, ColumnMappingComponent, Validation, Complete } from '../components/setup'
-import { IMPORT_FIELDS, type SetupStep, type ColumnMapping, type ParsedData } from '../types/setup'
+import { type SetupStep, type ColumnMapping, type ParsedData } from '../types/setup'
 import { importProducts } from '@wareflow/db'
 
 export const Route = createFileRoute('/setup')({
   component: SetupPage,
 })
+
+const STEPS = ['file-selection', 'preview', 'column-mapping', 'validation'] as const
+const STEP_LABELS = ['File', 'Preview', 'Mapping', 'Validate']
 
 function SetupPage() {
   const navigate = useNavigate()
@@ -88,39 +91,45 @@ function SetupPage() {
     setImportedCount(0)
   }, [])
 
+  const currentStepIndex = STEPS.indexOf(step)
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       {/* Progress indicator */}
       {step !== 'complete' && (
-        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-          <div className="max-w-4xl mx-auto px-6 py-4">
+        <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
+          <div className="max-w-3xl mx-auto px-6 py-6">
             <div className="flex items-center justify-between">
-              {(['file-selection', 'preview', 'column-mapping', 'validation'] as SetupStep[]).map((s, idx) => {
-                const stepNum = idx + 1
-                const labels = ['File', 'Preview', 'Mapping', 'Validate']
+              {STEPS.map((s, idx) => {
                 const isActive = s === step
-                const isCompleted = stepNum < ['file-selection', 'preview', 'column-mapping', 'validation'].indexOf(step) + 1
+                const isCompleted = idx < currentStepIndex
 
                 return (
-                  <div key={s} className="flex items-center">
-                    <div className="flex items-center gap-2">
+                  <div key={s} className="flex items-center flex-1">
+                    <div className="flex flex-col items-center">
                       <div className={`
-                        w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
+                        w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold ring-4 ring-white dark:ring-slate-800
                         ${isCompleted ? 'bg-green-500 text-white' :
-                          isActive ? 'bg-blue-500 text-white' :
-                          'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'}
+                          isActive ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' :
+                          'bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500'}
                       `}>
-                        {isCompleted ? '✓' : stepNum}
+                        {isCompleted ? (
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        ) : (
+                          idx + 1
+                        )}
                       </div>
                       <span className={`
-                        text-sm font-medium hidden sm:inline
-                        ${isActive ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'}
+                        mt-2 text-xs font-medium hidden sm:block
+                        ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400'}
                       `}>
-                        {labels[idx]}
+                        {STEP_LABELS[idx]}
                       </span>
                     </div>
-                    {idx < 3 && (
-                      <div className={`w-8 sm:w-16 h-0.5 mx-2 ${isCompleted ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-700'}`} />
+                    {idx < STEPS.length - 1 && (
+                      <div className={`flex-1 h-1 mx-3 rounded ${isCompleted ? 'bg-green-500' : 'bg-slate-200 dark:bg-slate-700'}`} />
                     )}
                   </div>
                 )
@@ -131,52 +140,54 @@ function SetupPage() {
       )}
 
       {/* Step content */}
-      <div className="px-6 py-8">
-        {step === 'file-selection' && (
-          <FileSelection onFileSelect={handleFileSelect} />
-        )}
+      <main className="px-6 py-10">
+        <div className="max-w-4xl mx-auto">
+          {step === 'file-selection' && (
+            <FileSelection onFileSelect={handleFileSelect} />
+          )}
 
-        {step === 'preview' && file && (
-          <Preview
-            data={parsedData}
-            headers={headers}
-            rowCount={rowCount}
-            fileName={file.name}
-            onBack={handleBack}
-            onNext={handleNext}
-          />
-        )}
+          {step === 'preview' && file && (
+            <Preview
+              data={parsedData}
+              headers={headers}
+              rowCount={rowCount}
+              fileName={file.name}
+              onBack={handleBack}
+              onNext={handleNext}
+            />
+          )}
 
-        {step === 'column-mapping' && (
-          <ColumnMappingComponent
-            data={parsedData}
-            headers={headers}
-            columnMapping={columnMapping}
-            onBack={handleBack}
-            onNext={handleNext}
-            onMappingChange={setColumnMapping}
-          />
-        )}
+          {step === 'column-mapping' && (
+            <ColumnMappingComponent
+              data={parsedData}
+              headers={headers}
+              columnMapping={columnMapping}
+              onBack={handleBack}
+              onNext={handleNext}
+              onMappingChange={setColumnMapping}
+            />
+          )}
 
-        {step === 'validation' && (
-          <Validation
-            data={parsedData}
-            columnMapping={columnMapping}
-            onBack={handleBack}
-            onImport={handleImport}
-            isImporting={isImporting}
-            error={importError}
-          />
-        )}
+          {step === 'validation' && (
+            <Validation
+              data={parsedData}
+              columnMapping={columnMapping}
+              onBack={handleBack}
+              onImport={handleImport}
+              isImporting={isImporting}
+              error={importError}
+            />
+          )}
 
-        {step === 'complete' && (
-          <Complete
-            importedCount={importedCount}
-            onViewProducts={handleViewProducts}
-            onImportAnother={handleImportAnother}
-          />
-        )}
-      </div>
+          {step === 'complete' && (
+            <Complete
+              importedCount={importedCount}
+              onViewProducts={handleViewProducts}
+              onImportAnother={handleImportAnother}
+            />
+          )}
+        </div>
+      </main>
     </div>
   )
 }

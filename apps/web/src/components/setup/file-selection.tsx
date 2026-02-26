@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { Upload, FileSpreadsheet, AlertCircle } from 'lucide-react'
+import { Upload, FileSpreadsheet, AlertCircle, FileText } from 'lucide-react'
 import Papa from 'papaparse'
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
@@ -17,7 +17,7 @@ export function FileSelection({ onFileSelect }: FileSelectionProps) {
     setError(null)
 
     if (file.size > MAX_FILE_SIZE) {
-      setError(`File is too large. Maximum size is 10 MB.`)
+      setError(`File is too large. Maximum size is 10 MB.`)
       return
     }
 
@@ -86,13 +86,16 @@ export function FileSelection({ onFileSelect }: FileSelectionProps) {
   }, [parseFile])
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-          Import Your Data
+    <div className="w-full max-w-xl mx-auto">
+      <div className="text-center mb-10">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-2xl mb-4">
+          <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+        </div>
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+          Import Your Products
         </h2>
-        <p className="text-gray-600 dark:text-gray-400">
-          Drop files here or click to browse. Accepts: .csv • Max: 10 MB
+        <p className="text-slate-500 dark:text-slate-400">
+          Upload a CSV file with your product inventory
         </p>
       </div>
 
@@ -109,11 +112,11 @@ export function FileSelection({ onFileSelect }: FileSelectionProps) {
           }
         }}
         className={`
-          relative border-2 border-dashed rounded-xl p-12 text-center cursor-pointer
-          transition-all duration-200 outline-none
+          relative border-2 border-dashed rounded-2xl p-16 text-center cursor-pointer
+          transition-all duration-300 outline-none
           ${isDragging
-            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-4 ring-blue-500/20'
-            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 focus-visible:ring-4 focus-visible:ring-blue-500/20'
+            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 scale-[1.02]'
+            : 'border-slate-300 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 focus-visible:ring-4 focus-visible:ring-blue-500/20'
           }
         `}
       >
@@ -128,30 +131,30 @@ export function FileSelection({ onFileSelect }: FileSelectionProps) {
           className="sr-only"
         />
 
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center gap-5">
           <div className={`
-            p-4 rounded-full transition-colors duration-200
-            ${isDragging ? 'bg-blue-100 dark:bg-blue-900' : 'bg-gray-100 dark:bg-gray-800'}
+            p-5 rounded-2xl transition-all duration-300
+            ${isDragging ? 'bg-blue-100 dark:bg-blue-900/50' : 'bg-slate-100 dark:bg-slate-800'}
           `}>
             {isDragging ? (
-              <FileSpreadsheet className="w-10 h-10 text-blue-500" aria-hidden="true" />
+              <FileSpreadsheet className="w-12 h-12 text-blue-600 dark:text-blue-400" aria-hidden="true" />
             ) : (
-              <Upload className="w-10 h-10 text-gray-400" aria-hidden="true" />
+              <Upload className="w-12 h-12 text-slate-400 dark:text-slate-500" aria-hidden="true" />
             )}
           </div>
 
           <div>
-            <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
-              {isDragging ? 'Drop your file here' : 'Drag & drop your file here'}
+            <p className="text-lg font-semibold text-slate-700 dark:text-slate-200">
+              {isDragging ? 'Drop your file here' : 'Drag & drop your CSV file'}
             </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
               or click to browse
             </p>
           </div>
 
-          <div className="flex items-center gap-2 text-xs text-gray-400">
-            <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">.csv</span>
-            <span>Max 10 MB</span>
+          <div className="flex items-center gap-3 text-xs text-slate-400 dark:text-slate-500">
+            <span className="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 rounded-full font-medium">.csv</span>
+            <span>Max 10 MB</span>
           </div>
         </div>
       </div>
@@ -160,12 +163,19 @@ export function FileSelection({ onFileSelect }: FileSelectionProps) {
         <div
           role="alert"
           aria-live="polite"
-          className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center gap-3"
+          className="mt-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-3"
         >
           <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" aria-hidden="true" />
           <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
         </div>
       )}
+
+      {/* Help text */}
+      <div className="mt-8 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
+        <p className="text-sm text-slate-600 dark:text-slate-400 text-center">
+          Your CSV should include columns like: <span className="font-medium text-slate-900 dark:text-slate-200">SKU</span>, <span className="font-medium text-slate-900 dark:text-slate-200">Name</span>, <span className="font-medium text-slate-900 dark:text-slate-200">Quantity</span>
+        </p>
+      </div>
     </div>
   )
 }
