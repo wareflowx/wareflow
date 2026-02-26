@@ -73,7 +73,7 @@ export function WarehouseGrid() {
   return (
     <div className="h-full w-full relative">
       {/* Warehouse Selector */}
-      <div className="absolute top-6 left-6 flex items-center gap-2 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 px-3 py-2">
+      <div className="absolute top-6 left-6 z-10 flex items-center gap-2 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 px-3 py-2">
         <Warehouse className="w-4 h-4 text-slate-500" />
         <select
           value={selectedWarehouse}
@@ -100,7 +100,7 @@ export function WarehouseGrid() {
       </ReactFlow>
 
       {/* Floor Selector */}
-      <div className="absolute bottom-6 left-6 flex items-center bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+      <div className="absolute bottom-6 left-6 z-10 flex items-center bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
         <button
           onClick={() => setCurrentFloor(f => Math.max(0, f - 1))}
           className="p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
@@ -119,7 +119,7 @@ export function WarehouseGrid() {
       </div>
 
       {/* Toolbar */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-1 p-1.5 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700">
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1 p-1.5 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700">
         {tools.map((tool) => {
           const Icon = tool.icon
           const isActive = activeTool === tool.id
