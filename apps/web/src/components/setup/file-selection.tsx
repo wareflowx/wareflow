@@ -1,10 +1,8 @@
 import { useCallback, useState } from 'react'
 import { Upload, FileSpreadsheet, AlertCircle } from 'lucide-react'
-import { Button } from '../ui/button'
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
 const ACCEPTED_TYPES = ['.csv', '.xlsx']
-const ACCEPTED_MIME = ['text/csv', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
 
 interface FileSelectionProps {
   onFileSelect: (file: File, data: string[][], headers: string[]) => void
@@ -17,20 +15,17 @@ export function FileSelection({ onFileSelect }: FileSelectionProps) {
   const parseFile = useCallback(async (file: File) => {
     setError(null)
 
-    // Check file size
     if (file.size > MAX_FILE_SIZE) {
-      setError(`File is too large. Maximum size is 10MB.`)
+      setError(`File is too large. Maximum size is 10 MB.`)
       return
     }
 
-    // Check file extension
     const ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase()
     if (!ACCEPTED_TYPES.includes(ext)) {
       setError(`Invalid file type. Accepted: .csv, .xlsx`)
       return
     }
 
-    // Simple CSV parsing for now
     const text = await file.text()
     const lines = text.split('\n').filter(line => line.trim())
 
@@ -85,39 +80,51 @@ export function FileSelection({ onFileSelect }: FileSelectionProps) {
           Import Your Data
         </h2>
         <p className="text-gray-600 dark:text-gray-400">
-          Drop files here or click to browse. Accepts: .csv, .xlsx • Max: 10MB
+          Drop files here or click to browse. Accepts: .csv, .xlsx • Max: 10 MB
         </p>
       </div>
 
       <div
+        role="button"
+        tabIndex={0}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            document.getElementById('file-input')?.click()
+          }
+        }}
         className={`
           relative border-2 border-dashed rounded-xl p-12 text-center cursor-pointer
-          transition-all duration-200
+          transition-all duration-200 outline-none
           ${isDragging
-            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-4 ring-blue-500/20'
+            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 focus-visible:ring-4 focus-visible:ring-blue-500/20'
           }
         `}
       >
+        <label htmlFor="file-input" className="absolute inset-0 cursor-pointer">
+          <span className="sr-only">Select a file to import</span>
+        </label>
         <input
+          id="file-input"
           type="file"
           accept={ACCEPTED_TYPES.join(',')}
           onChange={handleFileInput}
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          className="sr-only"
         />
 
         <div className="flex flex-col items-center gap-4">
           <div className={`
-            p-4 rounded-full
+            p-4 rounded-full transition-colors duration-200
             ${isDragging ? 'bg-blue-100 dark:bg-blue-900' : 'bg-gray-100 dark:bg-gray-800'}
           `}>
             {isDragging ? (
-              <FileSpreadsheet className="w-10 h-10 text-blue-500" />
+              <FileSpreadsheet className="w-10 h-10 text-blue-500" aria-hidden="true" />
             ) : (
-              <Upload className="w-10 h-10 text-gray-400" />
+              <Upload className="w-10 h-10 text-gray-400" aria-hidden="true" />
             )}
           </div>
 
@@ -133,14 +140,18 @@ export function FileSelection({ onFileSelect }: FileSelectionProps) {
           <div className="flex items-center gap-2 text-xs text-gray-400">
             <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">.csv</span>
             <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">.xlsx</span>
-            <span>Max 10MB</span>
+            <span>Max 10 MB</span>
           </div>
         </div>
       </div>
 
       {error && (
-        <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center gap-3">
-          <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+        <div
+          role="alert"
+          aria-live="polite"
+          className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center gap-3"
+        >
+          <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" aria-hidden="true" />
           <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
         </div>
       )}
