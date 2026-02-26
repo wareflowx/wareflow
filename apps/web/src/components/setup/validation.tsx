@@ -17,6 +17,19 @@ export function Validation({ data, columnMapping, onBack, onImport, isImporting 
     const errors: ValidationError[] = []
     const warnings: ValidationWarning[] = []
 
+    // Check required field mappings first
+    const requiredFields = IMPORT_FIELDS.filter(f => f.required)
+    for (const field of requiredFields) {
+      if (!columnMapping[field.key]) {
+        errors.push({ row: 0, field: field.key, message: `Required field "${field.label}" is not mapped` })
+      }
+    }
+
+    // If required fields are missing, don't validate data
+    if (errors.length > 0) {
+      return { isValid: false, errors, warnings }
+    }
+
     const skuField = columnMapping.sku
     const nameField = columnMapping.name
     const quantityField = columnMapping.quantity

@@ -6,6 +6,7 @@ export type ColumnMapping = Record<string, string>
 
 export type ImportResult = {
   imported: number
+  errors?: string[]
 }
 
 export const isSetupRequired = async (): Promise<boolean> => {
@@ -23,6 +24,8 @@ export const importProducts = async (
   data: ParsedData[],
   mapping: ColumnMapping
 ): Promise<ImportResult> => {
+  const errors: string[] = []
+
   // Get or create default warehouse
   let warehouse = await db.warehouses.toCollection().first()
   if (!warehouse) {
@@ -64,8 +67,14 @@ export const importProducts = async (
     updatedAt: new Date()
   }))
 
-  await db.products.bulkAdd(products)
-  return { imported: products.length }
+  try {
+    // Use bulkPut to handle duplicates (update existing or add new)
+    await db.products.bulkPut(products)
+    return { imported: products.length, errors: errors.length > 0 ? errors : undefined }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error during import'
+    throw new Error(`Import failed: ${message}`)
+  }
 }
 
 export const resetApp = async (): Promise<void> => {
