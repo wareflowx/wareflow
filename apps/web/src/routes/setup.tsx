@@ -98,14 +98,14 @@ function SetupPage() {
       {/* Progress indicator */}
       {step !== 'complete' && (
         <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
-          <div className="max-w-3xl mx-auto px-6 py-6">
-            <div className="flex items-center justify-between">
+          <div className="max-w-2xl mx-auto px-6 py-6">
+            <div className="flex items-center justify-center gap-2">
               {STEPS.map((s, idx) => {
                 const isActive = s === step
                 const isCompleted = idx < currentStepIndex
 
                 return (
-                  <div key={s} className="flex items-center flex-1">
+                  <div key={s} className="flex items-center">
                     <div className="flex flex-col items-center">
                       <div className={`
                         w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold ring-4 ring-white dark:ring-slate-800
@@ -122,14 +122,17 @@ function SetupPage() {
                         )}
                       </div>
                       <span className={`
-                        mt-2 text-xs font-medium hidden sm:block
+                        mt-2 text-xs font-medium
                         ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400'}
                       `}>
                         {STEP_LABELS[idx]}
                       </span>
                     </div>
                     {idx < STEPS.length - 1 && (
-                      <div className={`flex-1 h-1 mx-3 rounded ${isCompleted ? 'bg-green-500' : 'bg-slate-200 dark:bg-slate-700'}`} />
+                      <div className={`
+                        w-16 sm:w-24 h-0.5 mx-2 rounded -mt-4
+                        ${isCompleted ? 'bg-green-500' : 'bg-slate-200 dark:bg-slate-700'}
+                      `} />
                     )}
                   </div>
                 )
