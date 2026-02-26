@@ -4,8 +4,6 @@ import { useCallback, useState } from 'react'
 import {
   ReactFlow,
   Background,
-  Controls,
-  MiniMap,
   useNodesState,
   useEdgesState,
   addEdge,
@@ -57,10 +55,11 @@ export function WarehouseGrid() {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         fitView
+        panInteractive={false}
+        zoomInteractive={false}
+        nodesDraggable={false}
       >
         <Background />
-        <Controls />
-        <MiniMap />
       </ReactFlow>
     </div>
   )
