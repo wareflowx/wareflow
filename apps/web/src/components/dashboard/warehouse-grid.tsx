@@ -12,6 +12,7 @@ import {
   type Edge,
 } from '@xyflow/react'
 import { MousePointer2, Move, Square, Trash2, ChevronDown, ChevronUp, Warehouse } from 'lucide-react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import '@xyflow/react/dist/style.css'
 
 type Tool = 'select' | 'move' | 'draw' | 'delete'
@@ -73,16 +74,17 @@ export function WarehouseGrid() {
   return (
     <div className="h-full w-full relative">
       {/* Warehouse Selector */}
-      <div className="absolute top-6 left-6 z-10 flex items-center gap-2 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 px-3 py-2">
-        <Warehouse className="w-4 h-4 text-slate-500" />
-        <select
-          value={selectedWarehouse}
-          onChange={(e) => setSelectedWarehouse(e.target.value)}
-          className="text-sm font-medium text-slate-900 dark:text-white bg-transparent outline-none cursor-pointer"
-        >
-          <option value="main">Main Warehouse</option>
-          <option value="secondary">Secondary Warehouse</option>
-        </select>
+      <div className="absolute top-6 left-6 z-10">
+        <Select value={selectedWarehouse} onValueChange={setSelectedWarehouse}>
+          <SelectTrigger className="w-[200px] bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+            <Warehouse className="w-4 h-4 mr-2 text-slate-500" />
+            <SelectValue placeholder="Select warehouse" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="main">Main Warehouse</SelectItem>
+            <SelectItem value="secondary">Secondary Warehouse</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <ReactFlow
