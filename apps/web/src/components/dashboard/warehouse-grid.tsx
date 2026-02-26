@@ -85,7 +85,7 @@ export function WarehouseGrid() {
       </ReactFlow>
 
       {/* Toolbar */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-1 p-2 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700">
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-1 p-1.5 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700">
         {tools.map((tool) => {
           const Icon = tool.icon
           const isActive = activeTool === tool.id
@@ -95,14 +95,14 @@ export function WarehouseGrid() {
               <button
                 onClick={() => setActiveTool(tool.id)}
                 className={`
-                  p-3 rounded-lg transition-colors
+                  p-2 rounded transition-colors
                   ${isActive
                     ? 'bg-blue-600 text-white'
                     : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'
                   }
                 `}
               >
-                <Icon className="w-5 h-5" />
+                <Icon className="w-4 h-4" />
               </button>
             </Tooltip>
           )
