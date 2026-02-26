@@ -1,8 +1,9 @@
 import { useCallback, useState } from 'react'
 import { Upload, FileSpreadsheet, AlertCircle } from 'lucide-react'
+import Papa from 'papaparse'
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
-const ACCEPTED_TYPES = ['.csv', '.xlsx']
+const ACCEPTED_TYPES = ['.csv']
 
 interface FileSelectionProps {
   onFileSelect: (file: File, data: string[][], headers: string[]) => void
@@ -22,28 +23,39 @@ export function FileSelection({ onFileSelect }: FileSelectionProps) {
 
     const ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase()
     if (!ACCEPTED_TYPES.includes(ext)) {
-      setError(`Invalid file type. Accepted: .csv, .xlsx`)
+      setError(`Invalid file type. Accepted: .csv`)
       return
     }
 
-    const text = await file.text()
-    const lines = text.split('\n').filter(line => line.trim())
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        if (results.errors.length > 0) {
+          setError(`Parsing error: ${results.errors[0].message}`)
+          return
+        }
 
-    if (lines.length === 0) {
-      setError('File is empty')
-      return
-    }
+        const headers = results.meta.fields || []
+        if (headers.length === 0) {
+          setError('File has no headers')
+          return
+        }
 
-    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''))
-    const data = lines.slice(1).map(line => {
-      const values = line.split(',').map(v => v.trim().replace(/"/g, ''))
-      return headers.reduce((obj, header, i) => {
-        obj[header] = values[i] || ''
-        return obj
-      }, {} as Record<string, string>)
+        const data = results.data as Record<string, string>[]
+        if (data.length === 0) {
+          setError('File is empty')
+          return
+        }
+
+        // Convert to array of arrays for compatibility
+        const dataArray = data.map(row => headers.map(h => row[h] || ''))
+        onFileSelect(file, dataArray, headers)
+      },
+      error: (err) => {
+        setError(`Failed to parse file: ${err.message}`)
+      }
     })
-
-    onFileSelect(file, data, headers)
   }, [onFileSelect])
 
   const handleDrop = useCallback((e: React.DragEvent) => {
@@ -80,7 +92,7 @@ export function FileSelection({ onFileSelect }: FileSelectionProps) {
           Import Your Data
         </h2>
         <p className="text-gray-600 dark:text-gray-400">
-          Drop files here or click to browse. Accepts: .csv, .xlsx • Max: 10 MB
+          Drop files here or click to browse. Accepts: .csv • Max: 10 MB
         </p>
       </div>
 
@@ -106,7 +118,7 @@ export function FileSelection({ onFileSelect }: FileSelectionProps) {
         `}
       >
         <label htmlFor="file-input" className="absolute inset-0 cursor-pointer">
-          <span className="sr-only">Select a file to import</span>
+          <span className="sr-only">Select a CSV file to import</span>
         </label>
         <input
           id="file-input"
@@ -139,7 +151,6 @@ export function FileSelection({ onFileSelect }: FileSelectionProps) {
 
           <div className="flex items-center gap-2 text-xs text-gray-400">
             <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">.csv</span>
-            <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">.xlsx</span>
             <span>Max 10 MB</span>
           </div>
         </div>

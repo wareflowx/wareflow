@@ -19,6 +19,7 @@ function SetupPage() {
   const [columnMapping, setColumnMapping] = useState<ColumnMapping>({})
   const [importedCount, setImportedCount] = useState(0)
   const [isImporting, setIsImporting] = useState(false)
+  const [importError, setImportError] = useState<string | null>(null)
 
   const handleFileSelect = useCallback((selectedFile: File, data: ParsedData[], fileHeaders: string[]) => {
     setFile(selectedFile)
@@ -59,11 +60,14 @@ function SetupPage() {
 
   const handleImport = useCallback(async () => {
     setIsImporting(true)
+    setImportError(null)
     try {
       const result = await importProducts(parsedData, columnMapping)
       setImportedCount(result.imported)
       setStep('complete')
     } catch (error) {
+      const message = error instanceof Error ? error.message : 'Import failed'
+      setImportError(message)
       console.error('Import failed:', error)
     } finally {
       setIsImporting(false)
@@ -161,6 +165,7 @@ function SetupPage() {
             onBack={handleBack}
             onImport={handleImport}
             isImporting={isImporting}
+            error={importError}
           />
         )}
 
