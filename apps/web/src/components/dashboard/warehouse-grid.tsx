@@ -5,7 +5,6 @@ import {
   ReactFlow,
   Background,
   useNodesState,
-  useEdgesState,
   type Node,
 } from '@xyflow/react'
 import { MousePointer2, Move, Square, Trash2, ChevronDown, ChevronUp, Warehouse } from 'lucide-react'
@@ -19,77 +18,89 @@ const GRID_COLS = 10
 const GRID_ROWS = 8
 const CELL_SIZE = 80
 
-type Zone = {
-  id: string
-  name: string
-  color: string
-  row: number
-  col: number
-  width: number
-  height: number
+// Generate column letters (A, B, C, ...)
+const getColumnLetter = (col: number): string => {
+  return String.fromCharCode(65 + col) // A = 65
 }
 
-const dummyZones: Zone[] = [
-  { id: 'z1', name: 'Zone A', color: '#3b82f6', row: 0, col: 0, width: 2, height: 2 },
-  { id: 'z2', name: 'Zone B', color: '#22c55e', row: 0, col: 3, width: 3, height: 2 },
-  { id: 'z3', name: 'Zone C', color: '#f59e0b', row: 2, col: 0, width: 2, height: 3 },
-  { id: 'z4', name: 'Zone D', color: '#ef4444', row: 3, col: 3, width: 4, height: 2 },
-  { id: 'z5', name: 'Zone E', color: '#8b5cf6', row: 0, col: 7, width: 3, height: 3 },
-]
+// Type for an emplacement
+type Emplacement = {
+  id: string
+  row: number
+  col: number
+  label: string
+  hasProduct: boolean
+  productName?: string
+  quantity?: number
+}
 
-// Generate grid cells
-const generateGridCells = (): Node[] => {
-  const cells: Node[] = []
+// Generate dummy emplacements with some filled
+const generateEmplacements = (): Emplacement[] => {
+  const emplacements: Emplacement[] = []
+
+  // Some filled emplacements for demo
+  const filledPositions = [
+    { row: 0, col: 0, product: 'Widget A', qty: 50 },
+    { row: 0, col: 1, product: 'Widget A', qty: 25 },
+    { row: 1, col: 3, product: 'Gadget B', qty: 100 },
+    { row: 2, col: 5, product: 'Part C', qty: 75 },
+    { row: 4, col: 2, product: 'Module D', qty: 10 },
+    { row: 5, col: 7, product: 'Component E', qty: 200 },
+  ]
+
+  const filledMap = new Map(
+    filledPositions.map(p => [`${p.row}-${p.col}`, { product: p.product, qty: p.qty }])
+  )
 
   for (let row = 0; row < GRID_ROWS; row++) {
     for (let col = 0; col < GRID_COLS; col++) {
-      const id = `cell-${row}-${col}`
-      cells.push({
-        id,
-        type: 'default',
-        position: { x: col * CELL_SIZE, y: row * CELL_SIZE },
-        data: { row, col },
-        style: {
-          width: CELL_SIZE,
-          height: CELL_SIZE,
-          border: '1px solid #e2e8f0',
-          borderRadius: '0',
-          background: 'transparent',
-        },
+      const label = `${getColumnLetter(col)}${row + 1}`
+      const filled = filledMap.get(`${row}-${col}`)
+      emplacements.push({
+        id: `emp-${row}-${col}`,
+        row,
+        col,
+        label,
+        hasProduct: !!filled,
+        productName: filled?.product,
+        quantity: filled?.qty,
       })
     }
   }
 
-  return cells
+  return emplacements
 }
 
-// Generate zone nodes from dummy data
-const generateZoneNodes = (zones: Zone[]): Node[] => {
-  return zones.map((zone) => ({
-    id: zone.id,
-    type: 'default',
-    position: { x: zone.col * CELL_SIZE, y: zone.row * CELL_SIZE },
-    data: { label: zone.name, color: zone.color },
-    style: {
-      width: zone.width * CELL_SIZE,
-      height: zone.height * CELL_SIZE,
-      background: zone.color,
-      borderRadius: '8px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      color: 'white',
-      fontWeight: 600,
-      fontSize: '14px',
-      border: 'none',
-      boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-    },
-  }))
+// Generate nodes from emplacements
+const generateEmplacementNodes = (emplacements: Emplacement[]): Node[] => {
+  return emplacements.map((emp) => {
+    const isFilled = emp.hasProduct
+    return {
+      id: emp.id,
+      type: 'default',
+      position: { x: emp.col * CELL_SIZE, y: emp.row * CELL_SIZE },
+      data: { label: emp.label, ...emp },
+      style: {
+        width: CELL_SIZE,
+        height: CELL_SIZE,
+        border: '2px solid #e2e8f0',
+        borderRadius: '4px',
+        background: isFilled ? '#dbeafe' : '#ffffff',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '2px',
+        fontSize: '12px',
+        fontWeight: 500,
+        color: '#1e293b',
+      },
+    }
+  })
 }
 
-const initialCells = generateGridCells()
-const initialZones = generateZoneNodes(dummyZones)
-const initialNodes: Node[] = [...initialCells, ...initialZones]
+const dummyEmplacements = generateEmplacements()
+const initialNodes = generateEmplacementNodes(dummyEmplacements)
 
 const tools: { id: Tool; icon: typeof MousePointer2; label: string }[] = [
   { id: 'select', icon: MousePointer2, label: 'Select' },
@@ -114,10 +125,6 @@ export function WarehouseGrid() {
   const [activeTool, setActiveTool] = useState<Tool>('select')
   const [currentFloor, setCurrentFloor] = useState(0)
   const [selectedWarehouse, setSelectedWarehouse] = useState('main')
-
-  // Calculate grid dimensions
-  const gridWidth = GRID_COLS * CELL_SIZE
-  const gridHeight = GRID_ROWS * CELL_SIZE
 
   return (
     <div className="h-full w-full relative">
