@@ -8,9 +8,10 @@ interface ValidationProps {
   columnMapping: ColumnMapping
   onBack: () => void
   onImport: () => void
+  isImporting?: boolean
 }
 
-export function Validation({ data, columnMapping, onBack, onImport }: ValidationProps) {
+export function Validation({ data, columnMapping, onBack, onImport, isImporting = false }: ValidationProps) {
   const validation = useMemo((): ValidationResult => {
     const errors: ValidationError[] = []
     const warnings: ValidationWarning[] = []
@@ -189,8 +190,8 @@ export function Validation({ data, columnMapping, onBack, onImport }: Validation
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back
         </Button>
-        <Button onClick={onImport} disabled={errorCount > 0}>
-          Import {data.length} Products
+        <Button onClick={onImport} disabled={errorCount > 0 || isImporting}>
+          {isImporting ? 'Importing...' : `Import ${data.length} Products`}
           <ArrowRight className="w-4 h-4 ml-2" />
         </Button>
       </div>

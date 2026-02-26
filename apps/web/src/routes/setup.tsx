@@ -1,7 +1,8 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { FileSelection, Preview, ColumnMappingComponent, Validation, Complete } from '../components/setup'
-import { IMPORT_FIELDS, type SetupStep, type ColumnMapping, type ParsedData, type ValidationResult } from '../types/setup'
+import { IMPORT_FIELDS, type SetupStep, type ColumnMapping, type ParsedData } from '../types/setup'
+import { importProducts } from '@wareflow/db'
 
 export const Route = createFileRoute('/setup')({
   component: SetupPage,
@@ -17,6 +18,7 @@ function SetupPage() {
   const [rowCount, setRowCount] = useState(0)
   const [columnMapping, setColumnMapping] = useState<ColumnMapping>({})
   const [importedCount, setImportedCount] = useState(0)
+  const [isImporting, setIsImporting] = useState(false)
 
   const handleFileSelect = useCallback((selectedFile: File, data: ParsedData[], fileHeaders: string[]) => {
     setFile(selectedFile)
@@ -55,12 +57,18 @@ function SetupPage() {
     }
   }, [step])
 
-  const handleImport = useCallback(() => {
-    // TODO: Connect to Dexie/Backend here
-    // For now, just show success
-    setImportedCount(parsedData.length)
-    setStep('complete')
-  }, [parsedData])
+  const handleImport = useCallback(async () => {
+    setIsImporting(true)
+    try {
+      const result = await importProducts(parsedData, columnMapping)
+      setImportedCount(result.imported)
+      setStep('complete')
+    } catch (error) {
+      console.error('Import failed:', error)
+    } finally {
+      setIsImporting(false)
+    }
+  }, [parsedData, columnMapping])
 
   const handleViewProducts = useCallback(() => {
     navigate({ to: '/' })
@@ -152,6 +160,7 @@ function SetupPage() {
             columnMapping={columnMapping}
             onBack={handleBack}
             onImport={handleImport}
+            isImporting={isImporting}
           />
         )}
 
