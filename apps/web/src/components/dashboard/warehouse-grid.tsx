@@ -49,7 +49,7 @@ export function WarehouseGrid() {
   )
 
   return (
-    <div className="h-[calc(100vh-200px)] w-full">
+    <div className="h-full w-full">
       <ReactFlow
         nodes={nodes}
         edges={edges}
