@@ -127,7 +127,6 @@ export function WarehouseGrid() {
                 return (
                   <div
                     key={emp.id}
-                    className="relative flex items-center justify-center cursor-pointer bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
                     style={{
                       width: CELL_SIZE,
                       height: CELL_SIZE,
@@ -136,11 +135,7 @@ export function WarehouseGrid() {
                       borderTop: '1px solid #cbd5e1',
                       borderLeft: '1px solid #cbd5e1',
                     }}
-                  >
-                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                      {emp.label}
-                    </span>
-                  </div>
+                  />
                 )
               })}
             </div>
