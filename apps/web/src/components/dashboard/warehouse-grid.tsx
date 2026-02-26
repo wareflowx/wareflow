@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { MousePointer2, Move, Square, Trash2, ChevronDown, ChevronUp, Warehouse } from 'lucide-react'
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
+import { MousePointer2, Move, Square, Trash2, ChevronDown, ChevronUp, Warehouse, ZoomIn, ZoomOut, Maximize2 } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 
 type Tool = 'select' | 'move' | 'draw' | 'delete'
@@ -88,9 +89,9 @@ export function WarehouseGrid() {
   const [selectedWarehouse, setSelectedWarehouse] = useState('main')
 
   return (
-    <div className="h-full w-full relative bg-slate-100 dark:bg-slate-900 overflow-auto">
+    <div className="h-full w-full relative bg-slate-100 dark:bg-slate-900 overflow-hidden">
       {/* Warehouse Selector */}
-      <div className="absolute top-6 left-6 z-10">
+      <div className="absolute top-6 left-6 z-50">
         <Select value={selectedWarehouse} onValueChange={setSelectedWarehouse}>
           <SelectTrigger className="w-[200px] bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
             <Warehouse className="w-4 h-4 mr-2 text-slate-500" />
@@ -103,49 +104,69 @@ export function WarehouseGrid() {
         </Select>
       </div>
 
-      {/* Grid */}
-      <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-        style={{
-          display: 'grid',
-          gridTemplateColumns: `repeat(${GRID_COLS}, ${CELL_SIZE}px)`,
-          gridTemplateRows: `repeat(${GRID_ROWS}, ${CELL_SIZE}px)`,
-          gap: '2px',
-        }}
+      {/* Grid with Pan & Zoom */}
+      <TransformWrapper
+        initialScale={1}
+        minScale={0.5}
+        maxScale={2}
+        centerOnInit
       >
-        {emplacements.map((emp) => {
-          const isFilled = emp.hasProduct
-          return (
+        <TransformComponent
+          wrapperClass="!w-full !h-full"
+          contentClass="!w-full !h-full"
+        >
+          <div
+            className="flex items-center justify-center"
+            style={{
+              width: GRID_COLS * CELL_SIZE + (GRID_COLS - 1) * 2,
+              height: GRID_ROWS * CELL_SIZE + (GRID_ROWS - 1) * 2,
+              padding: '20px',
+            }}
+          >
             <div
-              key={emp.id}
-              className={`
-                relative flex flex-col items-center justify-center rounded cursor-pointer
-                transition-all duration-150
-                ${isFilled
-                  ? 'bg-blue-100 dark:bg-blue-900/40 border-2 border-blue-300 dark:border-blue-700'
-                  : 'bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500'
-                }
-              `}
               style={{
-                width: CELL_SIZE,
-                height: CELL_SIZE,
+                display: 'grid',
+                gridTemplateColumns: `repeat(${GRID_COLS}, ${CELL_SIZE}px)`,
+                gridTemplateRows: `repeat(${GRID_ROWS}, ${CELL_SIZE}px)`,
+                gap: '2px',
               }}
             >
-              <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                {emp.label}
-              </span>
-              {isFilled && emp.productName && (
-                <span className="text-[10px] text-blue-600 dark:text-blue-400 font-medium truncate max-w-[90%] text-center mt-1">
-                  {emp.productName}
-                </span>
-              )}
+              {emplacements.map((emp) => {
+                const isFilled = emp.hasProduct
+                return (
+                  <div
+                    key={emp.id}
+                    className={`
+                      relative flex flex-col items-center justify-center rounded cursor-pointer
+                      transition-all duration-150
+                      ${isFilled
+                        ? 'bg-blue-100 dark:bg-blue-900/40 border-2 border-blue-300 dark:border-blue-700'
+                        : 'bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500'
+                      }
+                    `}
+                    style={{
+                      width: CELL_SIZE,
+                      height: CELL_SIZE,
+                    }}
+                  >
+                    <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                      {emp.label}
+                    </span>
+                    {isFilled && emp.productName && (
+                      <span className="text-[10px] text-blue-600 dark:text-blue-400 font-medium truncate max-w-[90%] text-center mt-1">
+                        {emp.productName}
+                      </span>
+                    )}
+                  </div>
+                )
+              })}
             </div>
-          )
-        })}
-      </div>
+          </div>
+        </TransformComponent>
+      </TransformWrapper>
 
       {/* Floor Selector */}
-      <div className="absolute bottom-6 left-6 z-10 flex items-center bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+      <div className="absolute bottom-6 left-6 z-50 flex items-center bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
         <button
           onClick={() => setCurrentFloor(f => Math.max(0, f - 1))}
           className="p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
@@ -164,7 +185,7 @@ export function WarehouseGrid() {
       </div>
 
       {/* Toolbar */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1 p-1.5 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700">
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1 p-1.5 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700">
         {tools.map((tool) => {
           const Icon = tool.icon
           const isActive = activeTool === tool.id
