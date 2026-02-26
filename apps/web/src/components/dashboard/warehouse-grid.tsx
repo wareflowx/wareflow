@@ -11,7 +11,7 @@ import {
   type Node,
   type Edge,
 } from '@xyflow/react'
-import { MousePointer2, Move, Square, Trash2, ChevronDown, ChevronUp } from 'lucide-react'
+import { MousePointer2, Move, Square, Trash2, ChevronDown, ChevronUp, Warehouse } from 'lucide-react'
 import '@xyflow/react/dist/style.css'
 
 type Tool = 'select' | 'move' | 'draw' | 'delete'
@@ -63,6 +63,7 @@ export function WarehouseGrid() {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
   const [activeTool, setActiveTool] = useState<Tool>('select')
   const [currentFloor, setCurrentFloor] = useState(0)
+  const [selectedWarehouse, setSelectedWarehouse] = useState('main')
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge(params, eds)),
@@ -71,6 +72,19 @@ export function WarehouseGrid() {
 
   return (
     <div className="h-full w-full relative">
+      {/* Warehouse Selector */}
+      <div className="absolute top-6 left-6 flex items-center gap-2 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 px-3 py-2">
+        <Warehouse className="w-4 h-4 text-slate-500" />
+        <select
+          value={selectedWarehouse}
+          onChange={(e) => setSelectedWarehouse(e.target.value)}
+          className="text-sm font-medium text-slate-900 dark:text-white bg-transparent outline-none cursor-pointer"
+        >
+          <option value="main">Main Warehouse</option>
+          <option value="secondary">Secondary Warehouse</option>
+        </select>
+      </div>
+
       <ReactFlow
         nodes={nodes}
         edges={edges}
