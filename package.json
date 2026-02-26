@@ -4,6 +4,9 @@
   "type": "module",
   "scripts": {
     "dev": "turbo dev",
+    "dev:web": "turbo dev --filter=web",
+    "dev:desktop": "turbo dev --filter=desktop",
+    "dev:all": "turbo run dev --filter=web --filter=desktop",
     "build": "turbo build",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
