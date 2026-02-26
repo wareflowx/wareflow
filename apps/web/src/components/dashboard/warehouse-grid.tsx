@@ -8,9 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 type Tool = 'select' | 'move' | 'draw' | 'delete'
 
 // Grid configuration
-const GRID_COLS = 20
-const GRID_ROWS = 15
-const CELL_SIZE = 60
+const GRID_COLS = 50
+const GRID_ROWS = 30
+const CELL_SIZE = 50
 
 // Generate column letters (A, B, C, ...)
 const getColumnLetter = (col: number): string => {
@@ -28,34 +28,18 @@ type Emplacement = {
   quantity?: number
 }
 
-// Generate dummy emplacements with some filled
+// Generate empty emplacements
 const generateEmplacements = (): Emplacement[] => {
-  const filledPositions = [
-    { row: 0, col: 0, product: 'Widget A', qty: 50 },
-    { row: 0, col: 1, product: 'Widget A', qty: 25 },
-    { row: 1, col: 3, product: 'Gadget B', qty: 100 },
-    { row: 2, col: 5, product: 'Part C', qty: 75 },
-    { row: 4, col: 2, product: 'Module D', qty: 10 },
-    { row: 5, col: 7, product: 'Component E', qty: 200 },
-  ]
-
-  const filledMap = new Map(
-    filledPositions.map(p => [`${p.row}-${p.col}`, { product: p.product, qty: p.qty }])
-  )
-
   const emplacements: Emplacement[] = []
   for (let row = 0; row < GRID_ROWS; row++) {
     for (let col = 0; col < GRID_COLS; col++) {
       const label = `${getColumnLetter(col)}${row + 1}`
-      const filled = filledMap.get(`${row}-${col}`)
       emplacements.push({
         id: `emp-${row}-${col}`,
         row,
         col,
         label,
-        hasProduct: !!filled,
-        productName: filled?.product,
-        quantity: filled?.qty,
+        hasProduct: false,
       })
     }
   }
@@ -136,7 +120,6 @@ export function WarehouseGrid() {
               }}
             >
               {emplacements.map((emp) => {
-                const isFilled = emp.hasProduct
                 // Add thicker border for every 5th column/row to create zones
                 const isZoneBorderCol = (emp.col + 1) % 5 === 0 && emp.col < GRID_COLS - 1
                 const isZoneBorderRow = (emp.row + 1) % 5 === 0 && emp.row < GRID_ROWS - 1
@@ -144,14 +127,7 @@ export function WarehouseGrid() {
                 return (
                   <div
                     key={emp.id}
-                    className={`
-                      relative flex flex-col items-center justify-center cursor-pointer
-                      transition-all duration-150
-                      ${isFilled
-                        ? 'bg-blue-100 dark:bg-blue-900/40'
-                        : 'bg-white dark:bg-slate-800'
-                      }
-                    `}
+                    className="relative flex items-center justify-center cursor-pointer bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
                     style={{
                       width: CELL_SIZE,
                       height: CELL_SIZE,
@@ -161,14 +137,9 @@ export function WarehouseGrid() {
                       borderLeft: '1px solid #cbd5e1',
                     }}
                   >
-                    <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
                       {emp.label}
                     </span>
-                    {isFilled && emp.productName && (
-                      <span className="text-[10px] text-blue-600 dark:text-blue-400 font-medium truncate max-w-[90%] text-center mt-1">
-                        {emp.productName}
-                      </span>
-                    )}
                   </div>
                 )
               })}
