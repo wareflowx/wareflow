@@ -1,52 +1,16 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
-import { MousePointer2, Move, Square, Trash2, ChevronDown, ChevronUp, Warehouse, ZoomIn, ZoomOut, Maximize2 } from 'lucide-react'
+import { MousePointer2, Move, Square, Trash2, ChevronDown, ChevronUp, Warehouse } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 
 type Tool = 'select' | 'move' | 'draw' | 'delete'
 
 // Grid configuration
-const GRID_COLS = 50
-const GRID_ROWS = 30
-const CELL_SIZE = 50
-
-// Generate column letters (A, B, C, ...)
-const getColumnLetter = (col: number): string => {
-  return String.fromCharCode(65 + col)
-}
-
-// Type for an emplacement
-type Emplacement = {
-  id: string
-  row: number
-  col: number
-  label: string
-  hasProduct: boolean
-  productName?: string
-  quantity?: number
-}
-
-// Generate empty emplacements
-const generateEmplacements = (): Emplacement[] => {
-  const emplacements: Emplacement[] = []
-  for (let row = 0; row < GRID_ROWS; row++) {
-    for (let col = 0; col < GRID_COLS; col++) {
-      const label = `${getColumnLetter(col)}${row + 1}`
-      emplacements.push({
-        id: `emp-${row}-${col}`,
-        row,
-        col,
-        label,
-        hasProduct: false,
-      })
-    }
-  }
-  return emplacements
-}
-
-const dummyEmplacements = generateEmplacements()
+const CELL_SIZE = 15
+const GRID_COLS = 100 // Large enough to cover viewport
+const GRID_ROWS = 100
 
 const tools: { id: Tool; icon: typeof MousePointer2; label: string }[] = [
   { id: 'select', icon: MousePointer2, label: 'Select' },
@@ -67,13 +31,33 @@ function Tooltip({ children, title }: { children: React.ReactNode; title: string
 }
 
 export function WarehouseGrid() {
-  const [emplacements] = useState<Emplacement[]>(dummyEmplacements)
   const [activeTool, setActiveTool] = useState<Tool>('select')
   const [currentFloor, setCurrentFloor] = useState(0)
   const [selectedWarehouse, setSelectedWarehouse] = useState('main')
 
+  // Generate grid cells
+  const cells = useMemo(() => {
+    const result = []
+    for (let row = 0; row < GRID_ROWS; row++) {
+      for (let col = 0; col < GRID_COLS; col++) {
+        // Zone borders every 10 cells
+        const isZoneBorderCol = (col + 1) % 10 === 0 && col < GRID_COLS - 1
+        const isZoneBorderRow = (row + 1) % 10 === 0 && row < GRID_ROWS - 1
+
+        result.push({
+          id: `cell-${row}-${col}`,
+          row,
+          col,
+          isZoneBorderCol,
+          isZoneBorderRow,
+        })
+      }
+    }
+    return result
+  }, [])
+
   return (
-    <div className="h-full w-full relative bg-slate-100 dark:bg-slate-900 overflow-hidden">
+    <div className="h-full w-full relative overflow-hidden" style={{ backgroundColor: '#f1f5f9' }}>
       {/* Warehouse Selector */}
       <div className="absolute top-6 left-6 z-50">
         <Select value={selectedWarehouse} onValueChange={setSelectedWarehouse}>
@@ -88,11 +72,11 @@ export function WarehouseGrid() {
         </Select>
       </div>
 
-      {/* Grid with Pan & Zoom */}
+      {/* Grid with Pan & Zoom - fills entire viewport */}
       <TransformWrapper
         initialScale={1}
-        minScale={0.5}
-        maxScale={2}
+        minScale={0.3}
+        maxScale={3}
         centerOnInit
       >
         <TransformComponent
@@ -100,45 +84,28 @@ export function WarehouseGrid() {
           contentClass="!w-full !h-full"
         >
           <div
-            className="flex items-center justify-center"
+            className="relative"
             style={{
-              width: GRID_COLS * CELL_SIZE + (GRID_COLS - 1) * 2,
-              height: GRID_ROWS * CELL_SIZE + (GRID_ROWS - 1) * 2,
-              padding: '20px',
+              width: GRID_COLS * CELL_SIZE,
+              height: GRID_ROWS * CELL_SIZE,
             }}
           >
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: `repeat(${GRID_COLS}, ${CELL_SIZE}px)`,
-                gridTemplateRows: `repeat(${GRID_ROWS}, ${CELL_SIZE}px)`,
-                gap: '1px',
-                backgroundColor: '#cbd5e1', // slate-300 - grid line color
-                padding: '2px',
-                borderRadius: '4px',
-                border: '3px solid #475569', // slate-600 - outer border
-              }}
-            >
-              {emplacements.map((emp) => {
-                // Add thicker border for every 5th column/row to create zones
-                const isZoneBorderCol = (emp.col + 1) % 5 === 0 && emp.col < GRID_COLS - 1
-                const isZoneBorderRow = (emp.row + 1) % 5 === 0 && emp.row < GRID_ROWS - 1
-
-                return (
-                  <div
-                    key={emp.id}
-                    style={{
-                      width: CELL_SIZE,
-                      height: CELL_SIZE,
-                      borderRight: isZoneBorderCol ? '2px solid #64748b' : '1px solid #cbd5e1',
-                      borderBottom: isZoneBorderRow ? '2px solid #64748b' : '1px solid #cbd5e1',
-                      borderTop: '1px solid #cbd5e1',
-                      borderLeft: '1px solid #cbd5e1',
-                    }}
-                  />
-                )
-              })}
-            </div>
+            {cells.map((cell) => (
+              <div
+                key={cell.id}
+                className="absolute bg-white"
+                style={{
+                  width: CELL_SIZE,
+                  height: CELL_SIZE,
+                  left: cell.col * CELL_SIZE,
+                  top: cell.row * CELL_SIZE,
+                  borderRight: cell.isZoneBorderCol ? '2px solid #64748b' : '1px solid #cbd5e1',
+                  borderBottom: cell.isZoneBorderRow ? '2px solid #64748b' : '1px solid #cbd5e1',
+                  borderTop: '1px solid #cbd5e1',
+                  borderLeft: '1px solid #cbd5e1',
+                }}
+              />
+            ))}
           </div>
         </TransformComponent>
       </TransformWrapper>
