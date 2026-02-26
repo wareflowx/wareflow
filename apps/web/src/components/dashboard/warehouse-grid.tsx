@@ -8,9 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 type Tool = 'select' | 'move' | 'draw' | 'delete'
 
 // Grid configuration
-const GRID_COLS = 10
-const GRID_ROWS = 8
-const CELL_SIZE = 80
+const GRID_COLS = 20
+const GRID_ROWS = 15
+const CELL_SIZE = 60
 
 // Generate column letters (A, B, C, ...)
 const getColumnLetter = (col: number): string => {
@@ -128,25 +128,37 @@ export function WarehouseGrid() {
                 display: 'grid',
                 gridTemplateColumns: `repeat(${GRID_COLS}, ${CELL_SIZE}px)`,
                 gridTemplateRows: `repeat(${GRID_ROWS}, ${CELL_SIZE}px)`,
-                gap: '2px',
+                gap: '1px',
+                backgroundColor: '#cbd5e1', // slate-300 - grid line color
+                padding: '2px',
+                borderRadius: '4px',
+                border: '3px solid #475569', // slate-600 - outer border
               }}
             >
               {emplacements.map((emp) => {
                 const isFilled = emp.hasProduct
+                // Add thicker border for every 5th column/row to create zones
+                const isZoneBorderCol = (emp.col + 1) % 5 === 0 && emp.col < GRID_COLS - 1
+                const isZoneBorderRow = (emp.row + 1) % 5 === 0 && emp.row < GRID_ROWS - 1
+
                 return (
                   <div
                     key={emp.id}
                     className={`
-                      relative flex flex-col items-center justify-center rounded cursor-pointer
+                      relative flex flex-col items-center justify-center cursor-pointer
                       transition-all duration-150
                       ${isFilled
-                        ? 'bg-blue-100 dark:bg-blue-900/40 border-2 border-blue-300 dark:border-blue-700'
-                        : 'bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500'
+                        ? 'bg-blue-100 dark:bg-blue-900/40'
+                        : 'bg-white dark:bg-slate-800'
                       }
                     `}
                     style={{
                       width: CELL_SIZE,
                       height: CELL_SIZE,
+                      borderRight: isZoneBorderCol ? '2px solid #64748b' : '1px solid #cbd5e1',
+                      borderBottom: isZoneBorderRow ? '2px solid #64748b' : '1px solid #cbd5e1',
+                      borderTop: '1px solid #cbd5e1',
+                      borderLeft: '1px solid #cbd5e1',
                     }}
                   >
                     <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
