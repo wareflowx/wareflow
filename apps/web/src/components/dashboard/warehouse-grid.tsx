@@ -1,15 +1,8 @@
 'use client'
 
-import { useCallback, useState, useMemo } from 'react'
-import {
-  ReactFlow,
-  Background,
-  useNodesState,
-  type Node,
-} from '@xyflow/react'
+import { useState } from 'react'
 import { MousePointer2, Move, Square, Trash2, ChevronDown, ChevronUp, Warehouse } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
-import '@xyflow/react/dist/style.css'
 
 type Tool = 'select' | 'move' | 'draw' | 'delete'
 
@@ -20,7 +13,7 @@ const CELL_SIZE = 80
 
 // Generate column letters (A, B, C, ...)
 const getColumnLetter = (col: number): string => {
-  return String.fromCharCode(65 + col) // A = 65
+  return String.fromCharCode(65 + col)
 }
 
 // Type for an emplacement
@@ -36,9 +29,6 @@ type Emplacement = {
 
 // Generate dummy emplacements with some filled
 const generateEmplacements = (): Emplacement[] => {
-  const emplacements: Emplacement[] = []
-
-  // Some filled emplacements for demo
   const filledPositions = [
     { row: 0, col: 0, product: 'Widget A', qty: 50 },
     { row: 0, col: 1, product: 'Widget A', qty: 25 },
@@ -52,6 +42,7 @@ const generateEmplacements = (): Emplacement[] => {
     filledPositions.map(p => [`${p.row}-${p.col}`, { product: p.product, qty: p.qty }])
   )
 
+  const emplacements: Emplacement[] = []
   for (let row = 0; row < GRID_ROWS; row++) {
     for (let col = 0; col < GRID_COLS; col++) {
       const label = `${getColumnLetter(col)}${row + 1}`
@@ -67,40 +58,10 @@ const generateEmplacements = (): Emplacement[] => {
       })
     }
   }
-
   return emplacements
 }
 
-// Generate nodes from emplacements
-const generateEmplacementNodes = (emplacements: Emplacement[]): Node[] => {
-  return emplacements.map((emp) => {
-    const isFilled = emp.hasProduct
-    return {
-      id: emp.id,
-      type: 'default',
-      position: { x: emp.col * CELL_SIZE, y: emp.row * CELL_SIZE },
-      data: { label: emp.label, ...emp },
-      style: {
-        width: CELL_SIZE,
-        height: CELL_SIZE,
-        border: '2px solid #e2e8f0',
-        borderRadius: '4px',
-        background: isFilled ? '#dbeafe' : '#ffffff',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '2px',
-        fontSize: '12px',
-        fontWeight: 500,
-        color: '#1e293b',
-      },
-    }
-  })
-}
-
 const dummyEmplacements = generateEmplacements()
-const initialNodes = generateEmplacementNodes(dummyEmplacements)
 
 const tools: { id: Tool; icon: typeof MousePointer2; label: string }[] = [
   { id: 'select', icon: MousePointer2, label: 'Select' },
@@ -113,7 +74,7 @@ function Tooltip({ children, title }: { children: React.ReactNode; title: string
   return (
     <div className="relative group">
       {children}
-      <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-slate-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+      <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-slate-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
         {title}
       </div>
     </div>
@@ -121,13 +82,13 @@ function Tooltip({ children, title }: { children: React.ReactNode; title: string
 }
 
 export function WarehouseGrid() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
+  const [emplacements] = useState<Emplacement[]>(dummyEmplacements)
   const [activeTool, setActiveTool] = useState<Tool>('select')
   const [currentFloor, setCurrentFloor] = useState(0)
   const [selectedWarehouse, setSelectedWarehouse] = useState('main')
 
   return (
-    <div className="h-full w-full relative">
+    <div className="h-full w-full relative bg-slate-100 dark:bg-slate-900 overflow-auto">
       {/* Warehouse Selector */}
       <div className="absolute top-6 left-6 z-10">
         <Select value={selectedWarehouse} onValueChange={setSelectedWarehouse}>
@@ -142,19 +103,46 @@ export function WarehouseGrid() {
         </Select>
       </div>
 
-      <ReactFlow
-        nodes={nodes}
-        onNodesChange={onNodesChange}
-        fitView
-        panInteractive={false}
-        zoomInteractive={false}
-        nodesDraggable={false}
-        minZoom={0.5}
-        maxZoom={1}
-        defaultViewport={{ x: 0, y: 0, zoom: 0.8 }}
+      {/* Grid */}
+      <div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: `repeat(${GRID_COLS}, ${CELL_SIZE}px)`,
+          gridTemplateRows: `repeat(${GRID_ROWS}, ${CELL_SIZE}px)`,
+          gap: '2px',
+        }}
       >
-        <Background gap={0} color="#e2e8f0" />
-      </ReactFlow>
+        {emplacements.map((emp) => {
+          const isFilled = emp.hasProduct
+          return (
+            <div
+              key={emp.id}
+              className={`
+                relative flex flex-col items-center justify-center rounded cursor-pointer
+                transition-all duration-150
+                ${isFilled
+                  ? 'bg-blue-100 dark:bg-blue-900/40 border-2 border-blue-300 dark:border-blue-700'
+                  : 'bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500'
+                }
+              `}
+              style={{
+                width: CELL_SIZE,
+                height: CELL_SIZE,
+              }}
+            >
+              <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                {emp.label}
+              </span>
+              {isFilled && emp.productName && (
+                <span className="text-[10px] text-blue-600 dark:text-blue-400 font-medium truncate max-w-[90%] text-center mt-1">
+                  {emp.productName}
+                </span>
+              )}
+            </div>
+          )
+        })}
+      </div>
 
       {/* Floor Selector */}
       <div className="absolute bottom-6 left-6 z-10 flex items-center bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
