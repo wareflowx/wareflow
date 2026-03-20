@@ -5,14 +5,14 @@
 <h1 align="center">Wareflow</h1>
 
 <p align="center">
-  <a href="https://github.com/wareflow/wareflow">
-    <img src="https://img.shields.io/github/package-json/v/wareflow/wareflow" alt="Version">
+  <a href="https://github.com/wareflowx/wareflow/stargazers">
+    <img src="https://img.shields.io/github/stars/wareflowx/wareflow" alt="Stars">
   </a>
-  <a href="https://github.com/wareflow/wareflow/actions">
-    <img src="https://img.shields.io/github/actions/workflow/status/wareflow/wareflow/ci?label=tests" alt="Tests">
+  <a href="https://github.com/wareflowx/wareflow/fork">
+    <img src="https://img.shields.io/github/forks/wareflowx/wareflow" alt="Forks">
   </a>
-  <a href="https://github.com/wareflow/wareflow/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/wareflow/wareflow" alt="License">
+  <a href="https://github.com/wareflowx/wareflow/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/wareflowx/wareflow" alt="License">
   </a>
 </p>
 
