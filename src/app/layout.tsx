@@ -1,12 +1,23 @@
+import { Geist, Geist_Mono } from 'next/font/google';
 import { Package, ArrowRight, Command } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ThemeProvider } from '@/components/theme-provider';
 import './globals.css';
 
+const geistSans = Geist({
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
+});
+
+const geistMono = Geist_Mono({
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
+});
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark" style={{ colorScheme: 'dark' }}>
+    <html lang="en" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} dark`} style={{ colorScheme: 'dark' }}>
       <body className="bg-background text-foreground font-sans antialiased min-h-screen">
         <ThemeProvider
           attribute="class"
