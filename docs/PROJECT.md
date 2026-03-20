@@ -2,7 +2,7 @@
 
 ## Overview
 
-Wareflow is a centralized platform that serves as the hub for all Wareflow applications — similar to how Vercel provides a unified dashboard for managing deployments, projects, and analytics. It provides a single entry point for accessing and managing multiple logistics applications.
+Wareflow is a centralized platform that serves as the hub for all Wareflow applications. Similar to how Vercel provides a unified dashboard for managing deployments, projects, and analytics. It provides a single entry point for accessing and managing multiple logistics applications.
 
 ## Purpose
 
@@ -19,7 +19,7 @@ The project currently consists of:
 
 ### Visual Identity
 
-Inspired by Vercel and Terminal — clean, professional, sophisticated.
+Inspired by Vercel and Terminal. Clean, professional, sophisticated.
 
 - **Color scheme**: Full black theme via `bg-background` (configured as true black), high contrast text
 - **Typography**: Geist (sans-serif) for readability, Geist Mono for technical accents
@@ -28,29 +28,46 @@ Inspired by Vercel and Terminal — clean, professional, sophisticated.
 
 ### Design Principles
 
-- **Sobriety** — No excess, every element has a purpose
-- **Clarity** — Information hierarchy is clear and immediate
-- **Dark-first** — Dark theme as default, elegant and eye-friendly
-- **Professional** — Commands respect, suitable for business use
+- **Sobriety** No excess, every element has a purpose
+- **Clarity** Information hierarchy is clear and immediate
+- **Dark-first** Dark theme as default, elegant and eye-friendly
+- **Professional** Commands respect, suitable for business use
 
 ### Layout Rules
 
-- **No rounded corners** — All elements use sharp edges (`rounded-none`)
-- **Text spacing** — Generous margins around text content for readability
-- **Element grouping** — Elements are "glued" together (no gaps between related items)
-- **Borders vs Dividers** — Use `border` for distinct sections, `divide-y` for lists/groups of similar items
+- **No rounded corners** All elements use sharp edges (`rounded-none`)
+- **Text spacing** Generous margins around text content for readability
+- **Element grouping** Elements are "glued" together (no gaps between related items)
+- **Borders vs Dividers** Use `border` for distinct sections, `divide-y` for lists/groups of similar items
 
 ## Philosophy
 
-- **Single entry point** — One login for all logistics apps
-- **Modular** — Each application is independent but integrated
-- **User-focused** — Simple, intuitive interfaces for complex operations
+- **Single entry point** One login for all logistics apps
+- **Modular** Each application is independent but integrated
+- **User-focused** Simple, intuitive interfaces for complex operations
 
 ## Planned Pages
 
-### Dashboard
-- `/` — Main landing/dashboard page with overview statistics and quick access to projects
+### Dashboard (`/`)
+Main entry point. Shows an overview of all projects.
 
-### Projects
-- `/projects` — List of all projects/applications (static page)
-- `/projects/[project_id]` — Individual project details (dynamic route)
+**Content:**
+- Header with logo and user menu
+- Grid of all projects with status indicators
+- Quick stats summary (optional)
+
+### Projects List (`/projects`)
+Dedicated page listing all Wareflow applications.
+
+**Content:**
+- Page title "Projects"
+- List or grid of project cards
+- Each card shows: name, description, status, last updated
+
+### Project Details (`/projects/[slug]`)
+Individual project view.
+
+**Content:**
+- Project header with name and actions
+- Project-specific content and navigation
+- Status and configuration
