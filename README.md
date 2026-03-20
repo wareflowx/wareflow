@@ -18,74 +18,17 @@
 
 > A centralized platform for logistics management — the hub for all Wareflow applications.
 
-## Requirements
+## About
 
-- Node.js 20+
-- pnpm (recommended) or npm
+Wareflow is a centralized platform that serves as the hub for all Wareflow applications — similar to how Vercel provides a unified dashboard for managing deployments, projects, and analytics. It provides a single entry point for accessing and managing multiple logistics applications.
 
-## Installation
+Built as a lightweight ERP system inspired by Odoo but focused specifically on logistics operations, Wareflow consolidates various logistics tools into one unified interface. From warehouse management to delivery tracking, everything flows through a single, intuitive dashboard.
 
-```bash
-# Using pnpm (recommended)
-pnpm install
+## Philosophy
 
-# Or using npm
-npm install
-```
-
-## Quick Start
-
-```bash
-# Start the development server
-pnpm dev
-
-# Build for production
-pnpm build
-
-# Start production server
-pnpm start
-
-# Run linter
-pnpm lint
-
-# Type check
-pnpm typecheck
-```
-
-## Project Structure
-
-```
-wareflow/
-├── src/
-│   ├── app/           # Next.js App Router pages
-│   ├── components/    # UI components
-│   │   └── ui/        # shadcn/ui components
-│   ├── hooks/         # Custom React hooks
-│   └── lib/           # Utilities
-├── public/            # Static assets
-└── docs/              # Documentation
-```
-
-## Available Scripts
-
-- `pnpm dev` — Start development server
-- `pnpm build` — Build for production
-- `pnpm start` — Start production server
-- `pnpm lint` — Run ESLint
-- `pnpm typecheck` — Run TypeScript type checking
-
-## Technology Stack
-
-- **Framework**: Next.js 16 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS 4
-- **UI Components**: shadcn/ui, Radix UI
-- **Icons**: Lucide React
-- **Charts**: Recharts
-
-## Documentation
-
-For detailed project information, see [docs/PROJECT.md](docs/PROJECT.md).
+- **Single entry point** — One login for all logistics apps
+- **Modular** — Each application is independent but integrated
+- **User-focused** — Simple, intuitive interfaces for complex operations
 
 ## Contributing
 
