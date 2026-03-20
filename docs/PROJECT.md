@@ -72,3 +72,39 @@ Individual project view.
 - Project header with name and actions
 - Project-specific content and navigation
 - Status and configuration
+
+## Features
+
+### Command Palette
+Universal search accessible via `Cmd+K` / `Ctrl+K`. Allows users to quickly navigate to any project, search by tracking number, customer name, or action. Essential for power users and operators familiar with keyboard-driven workflows.
+
+### Real-time Status Indicators
+Project status cards update in real-time using WebSockets or Server-Sent Events. Status changes (e.g., "3 trucks pending", "Stock shortage in aisle B") appear instantly without page refresh.
+
+### Role-Based Access Control (RBAC)
+Granular permissions system where users see only what they need.
+- Warehouse operators see picking/fulfillment apps
+- Managers see analytics and fleet management
+- Admins see full configuration and team settings
+
+### Data Density Modes
+- **Default mode** — Spacious, readable layout for dashboard and navigation
+- **Compact mode** — Optimized for data-heavy tables (tracking numbers, packing lists, multi-line addresses). Reduces padding to maximize visible rows
+
+### Responsive & Touch Support
+- Desktop: Full `max-w-5xl` centered layout
+- Tablet: Adjusted layout for touch interaction (larger tap targets)
+- Mobile: Streamlined view for on-the-go actions (scanning, signatures)
+
+### Feedback Systems
+Since visual design is minimal, compensate with:
+- **Sound feedback** — Subtle audio cues for successful scans (common with handheld scanners)
+- **Haptic feedback** — Vibration on mobile/tablet for action confirmation
+- **Visual feedback** — Brief state changes on buttons and interactions
+
+## Technical Considerations
+
+- **Next.js 16** with React 19 and App Router
+- Dark mode as default to reduce eye strain for users working long hours
+- Mobile-first responsive design for warehouse floor usage
+- WebSocket/SSE infrastructure for real-time updates
