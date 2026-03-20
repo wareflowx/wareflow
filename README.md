@@ -16,19 +16,19 @@
   </a>
 </p>
 
-> A centralized platform for logistics management — the hub for all Wareflow applications.
+> A centralized platform for logistics management. The hub for all Wareflow applications.
 
 ## About
 
-Wareflow is a centralized platform that serves as the hub for all Wareflow applications — similar to how Vercel provides a unified dashboard for managing deployments, projects, and analytics. It provides a single entry point for accessing and managing multiple logistics applications.
+Wareflow is a centralized platform that serves as the hub for all Wareflow applications. Similar to how Vercel provides a unified dashboard for managing deployments, projects, and analytics. It provides a single entry point for accessing and managing multiple logistics applications.
 
 Built as a lightweight ERP system inspired by Odoo but focused specifically on logistics operations, Wareflow consolidates various logistics tools into one unified interface. From warehouse management to delivery tracking, everything flows through a single, intuitive dashboard.
 
 ## Philosophy
 
-- **Single entry point** — One login for all logistics apps
-- **Modular** — Each application is independent but integrated
-- **User-focused** — Simple, intuitive interfaces for complex operations
+- **Single entry point** One login for all logistics apps
+- **Modular** Each application is independent but integrated
+- **User-focused** Simple, intuitive interfaces for complex operations
 
 ## Contributing
 
