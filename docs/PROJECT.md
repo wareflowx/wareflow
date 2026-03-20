@@ -39,6 +39,7 @@ Inspired by Vercel and Terminal. Clean, professional, sophisticated.
 - **Text spacing** Generous margins around text content for readability
 - **Element grouping** Elements are "glued" together (no gaps between related items)
 - **Borders vs Dividers** Use `border` for distinct sections, `divide-y` for lists/groups of similar items
+- **Container** Use `max-w-5xl border-x border-border mx-auto` for page containers (Vercel-like centered layout)
 
 ## Philosophy
 
