@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 
-const transition = { duration: 0.6, ease: [0.16, 1, 0.3, 1] };
+const transition = { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const };
 const containerVariants = {
   hidden: { opacity: 0 },
   show: {
