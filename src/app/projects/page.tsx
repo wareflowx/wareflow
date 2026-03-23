@@ -22,7 +22,7 @@ const listVariants = {
 
 const itemVariants = {
   hidden: { opacity: 0, x: -10 },
-  show: { opacity: 1, x: 0, transition: { duration: 0.4, ease: "easeOut" } },
+  show: { opacity: 1, x: 0, transition: { duration: 0.4, ease: "easeOut" as const } },
 };
 
 export default function ProjectsDirectoryPage() {
@@ -33,7 +33,7 @@ export default function ProjectsDirectoryPage() {
         className="p-8 md:p-16 border-b border-border bg-secondary/5"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+        transition={{ duration: 0.5, ease: "easeOut" as const }}
       >
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">The Ecosystem</h1>
         <p className="text-lg text-muted-foreground max-w-2xl">
